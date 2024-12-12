@@ -100,7 +100,7 @@ public class DirectoryWatcherService {
                         // To receive further events, reset the key
                         key.reset();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(FxLiveDisplay.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FxLiveCode.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }

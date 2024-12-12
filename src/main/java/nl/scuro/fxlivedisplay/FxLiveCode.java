@@ -3,8 +3,6 @@ package nl.scuro.fxlivedisplay;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import atlantafx.base.theme.PrimerDark;
-import atlantafx.base.theme.PrimerLight;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -14,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import nl.scuro.fxlivedisplay.gui.MainView;
 
-public class FxLiveDisplay extends Application {
+public class FxLiveCode extends Application {
 
     private DirectoryWatcherService directoryWatcherService;
 
@@ -25,7 +23,7 @@ public class FxLiveDisplay extends Application {
         mainView.getSelectedClassPath().addListener((ChangeListener<File>) (observable, oldValue, newValue) -> {
             directoryWatcherService = new DirectoryWatcherService(newValue);
             ObservableList<String> observableArrayList = FXCollections.observableArrayList(directoryWatcherService.getAvailableFiles());
-            mainView.setFilteredList(new FilteredList<>(observableArrayList));
+            mainView.setOptionsList(new FilteredList<>(observableArrayList));
         });
         mainView.onTabCreated(tab -> directoryWatcherService.registerTab(tab));
         mainView.onTabClosed(tab -> directoryWatcherService.deRegisterTab(tab));

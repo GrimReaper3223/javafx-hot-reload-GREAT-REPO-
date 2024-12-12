@@ -1,6 +1,7 @@
 package nl.scuro.fxlivedisplay.gui;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.kordamp.ikonli.feather.Feather;
@@ -39,7 +40,8 @@ public class MainView extends BorderPane {
     private SimpleObjectProperty<File> selectedClassPath = new SimpleObjectProperty<>();
     private Consumer<ReloadingTab> tabCreatedConsumer;
     private Consumer<ReloadingTab> tabClosedConsumer;
-    private FilteredList<String> fileNamesProperty;
+    private ObservableList<String> optionsList = FXCollections.observableArrayList();
+    private FilteredList<String> filteredOptionsList = new FilteredList<>(optionsList);
 
     public MainView() {
         var dirChooser = new DirectoryChooser();
@@ -50,28 +52,35 @@ public class MainView extends BorderPane {
         setClasspathButton.visibleProperty().bind(Bindings.isNull(selectedClassPath));
         setClasspathButton.managedProperty().bind(Bindings.isNull(selectedClassPath));
 
-        var componentNameField = new AutoCompleteTextField();
+        var componentNameField = new ComboBox<>(filteredOptionsList);
         componentNameField.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
         componentNameField.setPromptText("Type the fully qualified class name");
         HBox.setHgrow(componentNameField, Priority.ALWAYS);
 
-        componentNameField.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("New value "+newValue);
-            fileNamesProperty.setPredicate(i->{
-                boolean contains = i.toLowerCase().contains(newValue.toLowerCase());
+        componentNameField.setOnMouseClicked(eh-> componentNameField.show());
+        componentNameField.setEditable(true);
+        componentNameField.getEditor().setOnKeyTyped(eh->{
+
+            if (componentNameField.getEditor().getText().isBlank()) {
+              filteredOptionsList.setPredicate(null);   
+            }
+            else filteredOptionsList.setPredicate(i->{
+                boolean contains = i.toLowerCase().contains(componentNameField.getEditor().getText().toLowerCase());
                 System.err.println("Contains: "+contains);
                 return contains;
             });
-            if (newValue.isEmpty()) {
-                autoCompletePopover.hide();
-            } else {
-                autoCompletePopover.show(componentNameField, fileNamesProperty);
+            
+            if (!componentNameField.isShowing()) {
+                componentNameField.show();
             }
         });
-
-        componentNameField.addEventHandler(SuggestedItemSelectedEvent.ITEM_SELECTED, eh->{
-            componentNameField.textProperty().set(eh.getSelectedValue());
+        componentNameField.valueProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("New value "+newValue);
         });
+
+        // componentNameField.addEventHandler(SuggestedItemSelectedEvent.ITEM_SELECTED, eh->{
+        //     componentNameField.textProperty().set(eh.getSelectedValue());
+        // });
 
         ComboBox<SelectableTheme> themeSelector = new ComboBox<>();
         themeSelector.setItems(createThemeList());
@@ -83,7 +92,7 @@ public class MainView extends BorderPane {
         final Button newWatchButton = new Button("New Watch", new FontIcon(Feather.PLUS));
         newWatchButton.setDefaultButton(true);
         newWatchButton.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
-        newWatchButton.disableProperty().bind(Bindings.isEmpty(componentNameField.textProperty()));
+        newWatchButton.disableProperty().bind(Bindings.isEmpty(componentNameField.valueProperty().asString()));
         newWatchButton.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
 
         final var toolbar = new ToolBar(setClasspathButton, componentNameField, newWatchButton, themeSelector);
@@ -101,7 +110,8 @@ public class MainView extends BorderPane {
                 initTabContainer();
             }
             rightStatusLabel.setText("Loaded component");
-            String name = componentNameField.getText();
+            String name = componentNameField.getValue();
+            componentNameField.setValue("");
             var tab = new ReloadingTab(name, selectedClassPath.get());
             tabPane.getTabs().add(tab);
             tab.setOnCloseRequest(eh -> this.tabClosedConsumer.accept(tab));
@@ -114,8 +124,8 @@ public class MainView extends BorderPane {
         setBottom(statusBar);
     }
 
-    public void setFilteredList(FilteredList<String> list) {
-        fileNamesProperty = list;
+    public void setOptionsList(List<String> list) {
+        optionsList.setAll(list);
     }
 
     private ObservableList<SelectableTheme> createThemeList() {

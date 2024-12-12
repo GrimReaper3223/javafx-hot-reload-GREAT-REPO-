@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>nl.scuro.applets</groupId>
-    <artifactId>javafx-lcd</artifactId>
+    <groupId>nl.scuro.tools.javafx</groupId>
+    <artifactId>javafx-hot-reload</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,31 +24,6 @@
             <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>applet-lib</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>yasson</artifactId>
-            <version>3.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
-            <version>2.1.3</version>
-        </dependency>
-<!--        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.2</version>
-        </dependency>-->
-        <dependency>
-            <groupId>nl.scuro</groupId>
-            <artifactId>instance-provider</artifactId>
-            <version>1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
             <version>12.3.1</version>
@@ -62,9 +37,7 @@
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-material2-pack</artifactId>
             <version>12.3.1</version>
-
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
