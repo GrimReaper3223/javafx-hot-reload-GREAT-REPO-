@@ -12,6 +12,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
@@ -31,7 +35,7 @@ public class DirectoryWatcherService {
     private Map<String, Tab> tabMap;
     private List<WatchKey> watchKeys;
     private List<String> availableFiles = new ArrayList();
-
+    private StringProperty updateTimestamp = new SimpleStringProperty("No update yet");
     private boolean runThread = true;
 
     public DirectoryWatcherService(File file) {
@@ -113,6 +117,7 @@ public class DirectoryWatcherService {
         Tab tab = tabMap.get(simpleName);
         if (tab != null) {
             tab.getContent().fireEvent(new NodeUpdatedEvent(NodeUpdatedEvent.RELOAD_TAB));
+            Platform.runLater(()-> updateTimestamp.set(LocalTime.now().toString()));
         } else {
             System.err.println("Could not find tab for name " + simpleName);
             System.err.println("In map: " + tabMap);
@@ -139,6 +144,10 @@ public class DirectoryWatcherService {
         watchKeys.forEach(k -> k.cancel());
         watchKeys.clear();
         runThread = false;
+    }
+
+    public StringProperty updateTimestampProperty() {
+        return updateTimestamp;
     }
 
 }

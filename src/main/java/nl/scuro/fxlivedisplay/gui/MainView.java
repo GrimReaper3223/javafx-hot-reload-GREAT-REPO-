@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.theme.CupertinoDark;
 import atlantafx.base.theme.CupertinoLight;
 import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
@@ -15,6 +15,7 @@ import atlantafx.base.theme.Styles;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -30,7 +31,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import nl.scuro.fxlivedisplay.SelectableTheme;
-import nl.scuro.fxlivedisplay.SuggestedItemSelectedEvent;
 
 public class MainView extends BorderPane {
     private TabPane tabPane;
@@ -44,6 +44,7 @@ public class MainView extends BorderPane {
     private FilteredList<String> filteredOptionsList = new FilteredList<>(optionsList);
 
     public MainView() {
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         var dirChooser = new DirectoryChooser();
         dirChooser.setTitle("Choose the classpath folder");
         final Button setClasspathButton = new Button("Select Classpath", new FontIcon(Feather.FOLDER));
@@ -66,7 +67,6 @@ public class MainView extends BorderPane {
             }
             else filteredOptionsList.setPredicate(i->{
                 boolean contains = i.toLowerCase().contains(componentNameField.getEditor().getText().toLowerCase());
-                System.err.println("Contains: "+contains);
                 return contains;
             });
             
@@ -74,13 +74,6 @@ public class MainView extends BorderPane {
                 componentNameField.show();
             }
         });
-        componentNameField.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("New value "+newValue);
-        });
-
-        // componentNameField.addEventHandler(SuggestedItemSelectedEvent.ITEM_SELECTED, eh->{
-        //     componentNameField.textProperty().set(eh.getSelectedValue());
-        // });
 
         ComboBox<SelectableTheme> themeSelector = new ComboBox<>();
         themeSelector.setItems(createThemeList());
@@ -109,7 +102,6 @@ public class MainView extends BorderPane {
             if (tabPane == null) {
                 initTabContainer();
             }
-            rightStatusLabel.setText("Loaded component");
             String name = componentNameField.getValue();
             componentNameField.setValue("");
             var tab = new ReloadingTab(name, selectedClassPath.get());
@@ -133,8 +125,8 @@ public class MainView extends BorderPane {
         SelectableTheme primerLight = new SelectableTheme(new PrimerLight());
         SelectableTheme primerDark = new SelectableTheme(new PrimerDark());
         SelectableTheme cupertinoLight = new SelectableTheme(new CupertinoLight());
-        SelectableTheme cupertinoDark = new SelectableTheme(new PrimerDark());
-        return FXCollections.observableArrayList(fxDefault, primerDark, primerLight, cupertinoDark, cupertinoLight);
+        SelectableTheme cupertinoDark = new SelectableTheme(new CupertinoDark());
+        return FXCollections.observableArrayList(primerLight, primerDark, cupertinoDark, cupertinoLight, fxDefault);
     }
 
     private void initTabContainer() {
@@ -155,6 +147,10 @@ public class MainView extends BorderPane {
 
     public SimpleObjectProperty<File> getSelectedClassPath() {
         return selectedClassPath;
+    }
+
+    public StringProperty rightLabelProperty() {
+        return rightStatusLabel.textProperty();
     }
 
 }

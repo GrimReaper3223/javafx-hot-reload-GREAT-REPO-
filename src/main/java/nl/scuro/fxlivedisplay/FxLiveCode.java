@@ -24,12 +24,13 @@ public class FxLiveCode extends Application {
             directoryWatcherService = new DirectoryWatcherService(newValue);
             ObservableList<String> observableArrayList = FXCollections.observableArrayList(directoryWatcherService.getAvailableFiles());
             mainView.setOptionsList(new FilteredList<>(observableArrayList));
+            mainView.rightLabelProperty().bind(directoryWatcherService.updateTimestampProperty());
         });
         mainView.onTabCreated(tab -> directoryWatcherService.registerTab(tab));
         mainView.onTabClosed(tab -> directoryWatcherService.deRegisterTab(tab));
         mainView.setPrefSize(600, 600);
         Scene scene = new Scene(mainView);
-        primaryStage.setTitle("JavaFx live code display");
+        primaryStage.setTitle("JavaFx Hot Code Reload");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(eh -> {
             if (directoryWatcherService != null) {

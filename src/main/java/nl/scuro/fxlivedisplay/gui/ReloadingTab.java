@@ -36,15 +36,12 @@ public class ReloadingTab extends Tab {
         setContent(stackPane);
 
     }
-    
-    
 
-    public void updateTabContent() {
+    private void updateTabContent() {
         Node node = loader.loadFxView(this.getText());
         stackPane.getChildren().clear();
         stackPane.getChildren().add(node);
     }
-
 
     public String getSimpleName() {
         return simpleName;
