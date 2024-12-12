@@ -1,4 +1,4 @@
-module nl.scuro.applets.appletcontainer {
+module JavaFxHotReload {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.logging;
