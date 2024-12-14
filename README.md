@@ -13,5 +13,12 @@ tweaking and poitioning. Of course nothing is preventing you from using FXML her
 - I've created this for fun (and so I can avoid having to use Scenenbuilder).
 - My next project will definitely use [AtlantaFx](https://github.com/mkpaz/atlantafx) (Scenebuilder has some trouble supporting custom themes, I'm _not_ going that route. This is the way).
 - It's tailored to use AtlantaFx themes and icons. So deviating from this requires changes to the module-info.java.
-- Builds will be provided as runnable JAR files and self contained archive using Jlink.
+- Builds will be provided as self contained archive using Jlink.
 - ... and more to come.
+
+## Howto run
+Download the latest release [here](https://github.com/mfdewit/javafx-hot-reload/releases) and extract the zip file to your location of choice.
+Then run the application:
+$ bin/FxHotReload
+
+![run it](run-it.png)
