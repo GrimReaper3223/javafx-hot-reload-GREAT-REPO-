@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay;
+package nl.scuro.tools.javafx.hotreload;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
-import nl.scuro.fxlivedisplay.gui.ReloadingTab;
+import nl.scuro.tools.javafx.hotreload.gui.ReloadingTab;
 
 public class DirectoryWatcherService {
     private WatchService watchService;
@@ -104,7 +104,7 @@ public class DirectoryWatcherService {
                         // To receive further events, reset the key
                         key.reset();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(FxLiveCode.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }

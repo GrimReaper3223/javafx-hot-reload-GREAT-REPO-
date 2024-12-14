@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay;
+package nl.scuro.tools.javafx.hotreload;
 
 import atlantafx.base.theme.Theme;
 

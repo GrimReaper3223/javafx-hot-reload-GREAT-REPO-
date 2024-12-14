@@ -54,7 +54,14 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>nl.scuro.fxapplet.runner.Far</mainClass>
+                    <mainClass>JavaFxHotReload/nl.scuro.tools.javafx.hotreload.MainApp</mainClass>
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>FxHotReload</launcher>
+                    <jlinkImageName>FxHotReload</jlinkImageName>
+                    <jlinkZipName>FxHotReload</jlinkZipName>
                 </configuration>
                 <executions>
                     <execution>

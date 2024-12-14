@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay;
+package nl.scuro.tools.javafx.hotreload;
 
 public class WatchedViewInfo {
     private String name;

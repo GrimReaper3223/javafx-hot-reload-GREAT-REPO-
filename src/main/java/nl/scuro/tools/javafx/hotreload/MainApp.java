@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay;
+package nl.scuro.tools.javafx.hotreload;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -10,9 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import nl.scuro.fxlivedisplay.gui.MainView;
+import nl.scuro.tools.javafx.hotreload.gui.MainView;
 
-public class FxLiveCode extends Application {
+public class MainApp extends Application {
 
     private DirectoryWatcherService directoryWatcherService;
 

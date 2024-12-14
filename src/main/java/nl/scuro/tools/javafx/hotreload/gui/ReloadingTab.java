@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay.gui;
+package nl.scuro.tools.javafx.hotreload.gui;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -9,8 +9,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
-import nl.scuro.fxlivedisplay.FxViewModuleLoader;
-import nl.scuro.fxlivedisplay.NodeUpdatedEvent;
+import nl.scuro.tools.javafx.hotreload.FxViewModuleLoader;
+import nl.scuro.tools.javafx.hotreload.NodeUpdatedEvent;
 
 public class ReloadingTab extends Tab {
     private FxViewModuleLoader loader;

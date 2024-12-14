@@ -1,4 +1,4 @@
-package nl.scuro.fxlivedisplay.gui;
+package nl.scuro.tools.javafx.hotreload.gui;
 
 import java.io.File;
 import java.util.List;
@@ -30,7 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
-import nl.scuro.fxlivedisplay.SelectableTheme;
+import nl.scuro.tools.javafx.hotreload.SelectableTheme;
 
 public class MainView extends BorderPane {
     private TabPane tabPane;
