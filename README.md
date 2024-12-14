@@ -17,8 +17,9 @@ tweaking and poitioning. Of course nothing is preventing you from using FXML her
 - ... and more to come.
 
 ## Howto run
-Download the latest release [here](https://github.com/mfdewit/javafx-hot-reload/releases) and extract the zip file to your location of choice.
-Then run the application:
-$ bin/FxHotReload
+Download the latest release [here](https://github.com/mfdewit/javafx-hot-reload/releases) and extract the zip file to your location of choice. 
+Then run the application from the unzipped directory:
+
+`$ bin/FxHotReload`
 
 ![run it](run-it.png)
