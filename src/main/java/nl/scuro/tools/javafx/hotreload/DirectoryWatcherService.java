@@ -12,7 +12,9 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,8 @@ public class DirectoryWatcherService {
 
     private Map<String, Tab> tabMap;
     private List<WatchKey> watchKeys;
-    private List<String> availableFiles = new ArrayList();
+    private List<String> availableFiles = new ArrayList<>();
+    private DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
     private StringProperty updateTimestamp = new SimpleStringProperty("No update yet");
     private boolean runThread = true;
 
@@ -93,10 +96,8 @@ public class DirectoryWatcherService {
                 while (runThread) {
                     try {
                         WatchKey key = watchService.take();
-                        System.out.println("Watching key " + key);
                         for (WatchEvent<?> event : key.pollEvents()) {
                             if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-                                System.out.println("File modified: " + event.context());
                                 updateTabContent(event.context().toString());
                             }
                         }
@@ -117,7 +118,7 @@ public class DirectoryWatcherService {
         Tab tab = tabMap.get(simpleName);
         if (tab != null) {
             tab.getContent().fireEvent(new NodeUpdatedEvent(NodeUpdatedEvent.RELOAD_TAB));
-            Platform.runLater(()-> updateTimestamp.set(LocalTime.now().toString()));
+            Platform.runLater(()-> updateTimestamp.set("Updated at " + timeFormat.format(LocalTime.now())));
         } else {
             System.err.println("Could not find tab for name " + simpleName);
             System.err.println("In map: " + tabMap);

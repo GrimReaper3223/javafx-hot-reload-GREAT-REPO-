@@ -1,10 +1,10 @@
 package nl.scuro.tools.javafx.hotreload.gui;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
@@ -16,7 +16,7 @@ public class ReloadingTab extends Tab {
     private FxViewModuleLoader loader;
     private StackPane stackPane;
     private String simpleName;
-    public ReloadingTab(String className, File pathToWatch)  {
+    public ReloadingTab(String className, File pathToWatch, StringProperty statusLabel)  {
         super(className);
         String[] split = className.split("\\.");
         simpleName = split[split.length-1];
@@ -27,11 +27,19 @@ public class ReloadingTab extends Tab {
         try {
             loader = new FxViewModuleLoader(URI.create(path));
             updateTabContent();
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            statusLabel.set("Error loading component");
         }
         stackPane.addEventHandler(NodeUpdatedEvent.RELOAD_TAB, event -> {
-            Platform.runLater(()->updateTabContent());
+            Platform.runLater(()->{
+                try {
+                    updateTabContent();
+                    statusLabel.set("");
+                } catch (Exception e) {
+                    statusLabel.set("Error loading component");
+                }
+            });
         });
         setContent(stackPane);
 

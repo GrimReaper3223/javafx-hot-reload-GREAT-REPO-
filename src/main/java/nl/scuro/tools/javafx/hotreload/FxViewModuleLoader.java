@@ -48,7 +48,7 @@ public class FxViewModuleLoader extends URLClassLoader {
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | ClassNotFoundException | InstantiationException ex) {
             ex.printStackTrace();
-            return new Label("Could not load component: " + ex.getMessage());
+            throw new RuntimeException("Component could not be loaded");
         }
     }
 

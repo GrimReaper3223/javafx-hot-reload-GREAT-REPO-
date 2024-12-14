@@ -93,7 +93,7 @@ public class MainView extends BorderPane {
         setTop(toolbar);
 
         selectedClassPath.addListener(
-                cl -> leftStatusLabel.setText("Using classpath: " + selectedClassPath.get().getAbsolutePath()));
+                cl -> leftStatusLabel.setText("Classpath selected"));
 
         Label startMessage = new Label("Nothing here yet. Start by selecting a classpath and then load a view.");
         setCenter(startMessage);
@@ -104,12 +104,14 @@ public class MainView extends BorderPane {
             }
             String name = componentNameField.getValue();
             componentNameField.setValue("");
-            var tab = new ReloadingTab(name, selectedClassPath.get());
+            var tab = new ReloadingTab(name, selectedClassPath.get(), leftLabelProperty());
             tabPane.getTabs().add(tab);
             tab.setOnCloseRequest(eh -> this.tabClosedConsumer.accept(tab));
             this.tabCreatedConsumer.accept(tab);
         });
 
+        leftStatusLabel.setPrefHeight(20);
+        rightStatusLabel.setPrefHeight(20);
         AnchorPane.setLeftAnchor(leftStatusLabel, 10d);
         AnchorPane.setRightAnchor(rightStatusLabel, 10d);
         AnchorPane statusBar = new AnchorPane(leftStatusLabel, rightStatusLabel);
@@ -151,6 +153,10 @@ public class MainView extends BorderPane {
 
     public StringProperty rightLabelProperty() {
         return rightStatusLabel.textProperty();
+    }
+
+    public StringProperty leftLabelProperty() {
+        return leftStatusLabel.textProperty();
     }
 
 }
