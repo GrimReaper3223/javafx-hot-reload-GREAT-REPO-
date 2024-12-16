@@ -2,8 +2,8 @@ module JavaFxHotReload {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.logging;
-    requires transitive javafx.graphics;
-    requires transitive javafx.base;
+    requires javafx.graphics;
+    requires javafx.base;
     
     requires atlantafx.base;
     requires org.kordamp.ikonli.material2;
