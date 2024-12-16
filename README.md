@@ -1,11 +1,11 @@
 # JavaFx Hot Code Reload
-This is a simple tool that provides hot code reload functionality for JavaFx UI components. Just select the classpath and provide the name of the classes to watch. When a watched class is rebuilt it's changes are immediately displayed.
+This is a simple tool that provides hot code reload functionality for JavaFx UI components. Just select the classpath and provide the name of the classes to watch. When a watched class is rebuilt it's changes are immediately displayed. 
 
 ![Demo time](demotime.gif)
 
 ## Requirements
 Any IDE that immediately compiles the JavaFx code to class files will do. Just make sure the classes use only the default JavaFx API's and have no dependencies on 3rd party packages. Keep in mind that views should just be views and 
-should be coupled loosely to the rest of the application.  
+should be coupled loosely to the rest of the application. Of course this can be difficult in some cases, but it will de fine for quickly prototyping your views.
 
 ## How does this compare to Scenebuilder?
 Both projects provide an interactive way to create visual components. While Scenebuilder provides a drag 'n drop appraoach that result in FXML files, this project requires you to code Java files. The direct feedback allows for easy 
