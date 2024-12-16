@@ -25,3 +25,5 @@ For Linux/OSX:
 `$ bin/fx-hot-reload`
 For Windows:
 `> bin\fx-hot-reload.bat`
+
+When running, make sure to select the correct classpath: for maven projects this would be <project>/target/classes. 
