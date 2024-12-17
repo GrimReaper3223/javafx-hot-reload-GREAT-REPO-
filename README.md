@@ -9,7 +9,7 @@ should be coupled loosely to the rest of the application. Of course this can be 
 
 ## How does this compare to Scenebuilder?
 Both projects provide an interactive way to create visual components. While Scenebuilder provides a drag 'n drop appraoach that result in FXML files, this project requires you to code Java files. The direct feedback allows for easy 
-tweaking and poitioning. Of course nothing is preventing you from using FXML here as well to create your views. But what is the point? I think there are benefits to having a fully Java coded UI.
+tweaking and positioning. Of course nothing is preventing you from using FXML here as well to create your views. But what is the point? I think there are benefits to having a fully Java coded UI.
 
 ## Some notes
 - I've created this for fun (and so I can avoid having to use Scenenbuilder).
