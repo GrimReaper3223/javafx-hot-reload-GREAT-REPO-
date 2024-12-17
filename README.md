@@ -9,7 +9,7 @@ In the current version there are some restricitons that apply:
 - No dependencies on other modules than javafx.*, atlantafx.base, org.kordamp.ikonli.javafx, org.kordamp.ikonli.core, org.kordamp.ikonli.feather, org.kordamp.ikonli.material2.
 - A default constructor is required.
   
-Off course this is still a work in progress and I'm hoping to remove some of there restriction.
+Off course this is still a work in progress and I'm hoping to remove some of these restrictions.
   
 ## How does this compare to Scenebuilder?
 Both projects provide an interactive way to create visual components. While Scenebuilder provides a drag 'n drop appraoach that result in FXML files, this project requires you to code Java files. The direct feedback allows for easy 
