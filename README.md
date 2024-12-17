@@ -8,6 +8,7 @@ In the current version there are some restricitons that apply:
 - The Java class must be in a module containing a module-info.java
 - No dependencies on other modules than javafx.*, atlantafx.base, org.kordamp.ikonli.javafx, org.kordamp.ikonli.core, org.kordamp.ikonli.feather, org.kordamp.ikonli.material2.
 - A default constructor is required.
+  
 Off course this is still a work in progress and I'm hoping to remove some of there restriction.
   
 ## How does this compare to Scenebuilder?
