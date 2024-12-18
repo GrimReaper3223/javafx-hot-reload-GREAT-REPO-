@@ -4,9 +4,9 @@ This is a simple tool that provides hot code reload functionality for JavaFx UI 
 ![Demo time](demotime.gif)
 
 ## Restrictions
-In the current version there are some restricitons that apply:
+In the current version there are some restrictions that apply:
 - The Java class must be in a module containing a module-info.java
-- No dependencies on other modules than javafx.*, atlantafx.base, org.kordamp.ikonli.javafx, org.kordamp.ikonli.core, org.kordamp.ikonli.feather, org.kordamp.ikonli.material2.
+- There are no dependencies on other modules than javafx.*, atlantafx.base, org.kordamp.ikonli.javafx, org.kordamp.ikonli.core, org.kordamp.ikonli.feather, org.kordamp.ikonli.material2.
 - A default constructor is required.
   
 Off course this is still a work in progress and I'm hoping to remove some of these restrictions.
