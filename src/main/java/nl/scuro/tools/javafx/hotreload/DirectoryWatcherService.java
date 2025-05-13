@@ -12,7 +12,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,8 +25,6 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import nl.scuro.tools.javafx.hotreload.gui.ReloadingTab;
 
@@ -42,7 +39,7 @@ public class DirectoryWatcherService {
     private boolean runThread = true;
 
     public DirectoryWatcherService(File file) {
-        watchKeys = new ArrayList<WatchKey>();
+        watchKeys = new ArrayList<>();
         tabMap = new HashMap<>();
         final String basePath = file.toPath().toString();
         try {
@@ -53,9 +50,9 @@ public class DirectoryWatcherService {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                         throws IOException {
                     String subPath = dir.toString().substring(basePath.length());
-                    String packagePath = subPath.replaceAll("/", ".");
-                    
-                    System.out.println("Path: " + packagePath);
+                    String packagePath = subPath.replace("/", ".");
+
+                    LogConsumer.offerLog("Path: " + packagePath);
                     File[] listFiles = dir.toFile().listFiles();
                     for (File file : listFiles) {
                         String fileName = file.getName();
@@ -66,7 +63,7 @@ public class DirectoryWatcherService {
                             fqName = fqName.substring(1);
                         }
                         if (file.isFile()) {
-                            System.out.println(fqName);
+                        	LogConsumer.offerLog(fqName);
                             availableFiles.add(fqName);
                         }
                     }
@@ -74,11 +71,10 @@ public class DirectoryWatcherService {
                     watchKeys.add(key);
                     return FileVisitResult.CONTINUE;
                 }
-
             });
 
         } catch (IOException e) {
-            e.printStackTrace();
+        	LogConsumer.offerLog(e.getMessage());
         }
         runWatcher();
     }
@@ -89,24 +85,23 @@ public class DirectoryWatcherService {
 
     private void runWatcher() {
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                // Infinite loop to continuously watch for events
-                while (runThread) {
-                    try {
-                        WatchKey key = watchService.take();
-                        for (WatchEvent<?> event : key.pollEvents()) {
-                            if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-                                updateTabContent(event.context().toString());
-                            }
+        Runnable r = () -> {
+            // Infinite loop to continuously watch for events
+            while (runThread) {
+                try {
+                    WatchKey key = watchService.take();
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+                            updateTabContent(event.context().toString());
                         }
-
-                        // To receive further events, reset the key
-                        key.reset();
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
+                    // To receive further events, reset the key
+                    key.reset();
+                } catch (InterruptedException ex) {
+                	LogConsumer.offerLog(ex.getMessage());
+                    Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                    Thread.currentThread().interrupt();
                 }
             }
         };
@@ -120,24 +115,22 @@ public class DirectoryWatcherService {
             tab.getContent().fireEvent(new NodeUpdatedEvent(NodeUpdatedEvent.RELOAD_TAB));
             Platform.runLater(()-> updateTimestamp.set("Updated at " + timeFormat.format(LocalTime.now())));
         } else {
-            System.err.println("Could not find tab for name " + simpleName);
-            System.err.println("In map: " + tabMap);
+        	LogConsumer.offerLog("Could not find tab for name " + simpleName);
+        	LogConsumer.offerLog("In map: " + tabMap);
         }
     }
 
     public void deRegisterTab(Tab tab) {
-        System.err.println("deregister " + tab.getText());
+    	LogConsumer.offerLog("deregister " + tab.getText());
         Optional<String> key = tabMap.entrySet().stream().filter(entry -> entry.getValue().equals(tab))
                 .map(Map.Entry::getKey).findAny();
-        key.ifPresent(k -> {
-            tabMap.remove(k);
-        });
+        key.ifPresent(tabMap::remove);
     }
 
     public void registerTab(ReloadingTab tab) {
-        System.out.println("Register " + tab.getSimpleName());
+    	LogConsumer.offerLog("Register " + tab.getSimpleName());
         tabMap.put(tab.getSimpleName(), tab);
-        System.out.println("Tab map: " + tabMap);
+        LogConsumer.offerLog("Tab map: " + tabMap);
 
     }
 
@@ -150,5 +143,4 @@ public class DirectoryWatcherService {
     public StringProperty updateTimestampProperty() {
         return updateTimestamp;
     }
-
 }

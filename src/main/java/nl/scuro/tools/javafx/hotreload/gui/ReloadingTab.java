@@ -16,13 +16,14 @@ public class ReloadingTab extends Tab {
     private FxViewModuleLoader loader;
     private StackPane stackPane;
     private String simpleName;
+    
     public ReloadingTab(String className, File pathToWatch, StringProperty statusLabel)  {
         super(className);
         String[] split = className.split("\\.");
         simpleName = split[split.length-1];
         stackPane = new StackPane();
         stackPane.setPadding(new Insets(10));
-        
+
         String path= "file://" + pathToWatch.getAbsolutePath();
         try {
             loader = new FxViewModuleLoader(URI.create(path));
@@ -31,18 +32,17 @@ public class ReloadingTab extends Tab {
             e.printStackTrace();
             statusLabel.set("Error loading component");
         }
-        stackPane.addEventHandler(NodeUpdatedEvent.RELOAD_TAB, event -> {
-            Platform.runLater(()->{
-                try {
-                    updateTabContent();
-                    statusLabel.set("");
-                } catch (Exception e) {
-                    statusLabel.set("Error loading component");
-                }
-            });
-        });
+        stackPane.addEventHandler(NodeUpdatedEvent.RELOAD_TAB, _ ->
+	    	Platform.runLater(() -> {
+	            try {
+	                updateTabContent();
+	                statusLabel.set("");
+	            } catch (Exception e) {
+	                statusLabel.set("Error loading component");
+	            }
+	        }
+	    ));
         setContent(stackPane);
-
     }
 
     private void updateTabContent() {
