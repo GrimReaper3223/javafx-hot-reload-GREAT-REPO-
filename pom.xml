@@ -6,6 +6,7 @@
     <version>1.1-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <release.version>24</release.version>
     </properties>
     <dependencies>
         <dependency>
@@ -59,7 +60,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>3.13.0</version>
                         <configuration>
-                            <release>23</release>
+                            <release>${release.version}</release>
                         </configuration>
                     </plugin>
 					<plugin>
@@ -128,7 +129,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>3.13.0</version>
                         <configuration>
-                            <release>23</release>
+                            <release>${release.version}</release>
                         </configuration>
                     </plugin>
 
@@ -199,7 +200,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>3.13.0</version>
                         <configuration>
-                            <release>23</release>
+                            <release>${release.version}</release>
                         </configuration>
                     </plugin>
 

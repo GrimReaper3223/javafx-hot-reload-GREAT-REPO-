@@ -10,13 +10,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.StackPane;
 import nl.scuro.tools.javafx.hotreload.FxViewModuleLoader;
+import nl.scuro.tools.javafx.hotreload.LogConsumer;
 import nl.scuro.tools.javafx.hotreload.NodeUpdatedEvent;
 
 public class ReloadingTab extends Tab {
     private FxViewModuleLoader loader;
     private StackPane stackPane;
     private String simpleName;
-    
+
     public ReloadingTab(String className, File pathToWatch, StringProperty statusLabel)  {
         super(className);
         String[] split = className.split("\\.");
@@ -29,7 +30,7 @@ public class ReloadingTab extends Tab {
             loader = new FxViewModuleLoader(URI.create(path));
             updateTabContent();
         } catch (Exception e) {
-            e.printStackTrace();
+        	LogConsumer.offerLog('\n' + e.toString());
             statusLabel.set("Error loading component");
         }
         stackPane.addEventHandler(NodeUpdatedEvent.RELOAD_TAB, _ ->
@@ -38,6 +39,7 @@ public class ReloadingTab extends Tab {
 	                updateTabContent();
 	                statusLabel.set("");
 	            } catch (Exception e) {
+	            	LogConsumer.offerLog('\n' + e.toString());
 	                statusLabel.set("Error loading component");
 	            }
 	        }
