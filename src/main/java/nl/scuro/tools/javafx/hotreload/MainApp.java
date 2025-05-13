@@ -1,10 +1,6 @@
 package nl.scuro.tools.javafx.hotreload;
 
-import java.io.File;
-import java.net.MalformedURLException;
-
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,9 +14,9 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         MainView mainView = new MainView();
-        mainView.getSelectedClassPath().addListener((ChangeListener<File>) (observable, oldValue, newValue) -> {
+        LogConsumer.setLogTextAreaNode(mainView.getLogTextArea());
+        mainView.getSelectedClassPath().addListener((_, _, newValue) -> {
             directoryWatcherService = new DirectoryWatcherService(newValue);
             ObservableList<String> observableArrayList = FXCollections.observableArrayList(directoryWatcherService.getAvailableFiles());
             mainView.setOptionsList(new FilteredList<>(observableArrayList));
@@ -29,18 +25,18 @@ public class MainApp extends Application {
         mainView.onTabCreated(tab -> directoryWatcherService.registerTab(tab));
         mainView.onTabClosed(tab -> directoryWatcherService.deRegisterTab(tab));
         mainView.setPrefSize(600, 600);
-        Scene scene = new Scene(mainView);
         primaryStage.setTitle("JavaFx Hot Code Reload");
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(eh -> {
+        primaryStage.setScene(new Scene(mainView.getRootNode()));
+        primaryStage.setOnCloseRequest(_ -> {
             if (directoryWatcherService != null) {
                 directoryWatcherService.shutdown();
             }
+            System.exit(0);
         });
         primaryStage.show();
     }
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         launch();
     }
 }
