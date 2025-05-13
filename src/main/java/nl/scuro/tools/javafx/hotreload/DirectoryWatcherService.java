@@ -74,7 +74,7 @@ public class DirectoryWatcherService {
             });
 
         } catch (IOException e) {
-        	LogConsumer.offerLog(e.getMessage());
+        	LogConsumer.offerLog('\n' + e.toString());
         }
         runWatcher();
     }
@@ -99,7 +99,7 @@ public class DirectoryWatcherService {
                     // To receive further events, reset the key
                     key.reset();
                 } catch (InterruptedException ex) {
-                	LogConsumer.offerLog(ex.getMessage());
+                	LogConsumer.offerLog('\n' + ex.toString());
                     Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
                     Thread.currentThread().interrupt();
                 }
