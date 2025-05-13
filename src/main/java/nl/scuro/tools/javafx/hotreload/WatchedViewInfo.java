@@ -5,9 +5,6 @@ public class WatchedViewInfo {
     private String viewImplementation;
     private String path;
 
-    public WatchedViewInfo() {
-    }
-
     public String getName() {
         return name;
     }
@@ -31,6 +28,4 @@ public class WatchedViewInfo {
     public void setPath(String path) {
         this.path = path;
     }
-
-    
 }

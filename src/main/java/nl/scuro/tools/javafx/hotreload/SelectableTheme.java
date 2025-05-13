@@ -6,7 +6,7 @@ public class SelectableTheme {
     private String name, stylesheet;
 
     public SelectableTheme(String name) {
-        this.name=name;
+        this.name = name;
     }
 
     public SelectableTheme(Theme theme) {
