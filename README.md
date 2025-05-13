@@ -31,3 +31,13 @@ For Windows:
 `> bin\fx-hot-reload.bat`
 
 When running, make sure to select the correct classpath: for maven projects this would be <project>/target/classes. 
+
+### Howto run²
+Download the .jar file and run it with java -jar <jar_name>.jar
+
+If you need to run it with the addition of some additional modules, define the module path and, if necessary, the additional modules that your application requires.
+
+e.g.: 
+
+Linux: <br>
+> java --module-path=... --add-modules=module1,module2,...moduleN --module your_application_module/path.to.main.class
