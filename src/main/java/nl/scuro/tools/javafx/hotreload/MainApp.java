@@ -17,10 +17,12 @@ public class MainApp extends Application {
         MainView mainView = new MainView();
         LogConsumer.setLogTextAreaNode(mainView.getLogTextArea());
         mainView.getSelectedClassPath().addListener((_, _, newValue) -> {
-            directoryWatcherService = new DirectoryWatcherService(newValue);
-            ObservableList<String> observableArrayList = FXCollections.observableArrayList(directoryWatcherService.getAvailableFiles());
-            mainView.setOptionsList(new FilteredList<>(observableArrayList));
-            mainView.rightLabelProperty().bind(directoryWatcherService.updateTimestampProperty());
+        	if(newValue != null) {
+        		directoryWatcherService = new DirectoryWatcherService(newValue.toPath());
+        		ObservableList<String> observableArrayList = FXCollections.observableArrayList(directoryWatcherService.getAvailableFiles());
+        		mainView.setOptionsList(new FilteredList<>(observableArrayList));
+        		mainView.rightLabelProperty().bind(directoryWatcherService.updateTimestampProperty());
+        	}
         });
         mainView.onTabCreated(tab -> directoryWatcherService.registerTab(tab));
         mainView.onTabClosed(tab -> directoryWatcherService.deRegisterTab(tab));
