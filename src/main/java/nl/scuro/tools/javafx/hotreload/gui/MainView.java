@@ -14,12 +14,16 @@ import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import atlantafx.base.theme.Styles;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker.State;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -65,87 +69,109 @@ public class MainView extends BorderPane {
     private VBox logBox = new VBox(logIndicatorLabel, logTextArea, buttonHBox);
 
     public MainView() {
-    	// configure the hidden log panel
-    	configureLogPane();
+		// configure the hidden log panel
+		configureLogPane();
 
-    	// classpath button config
-        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-        var dirChooser = new DirectoryChooser();
-        dirChooser.setTitle("Choose the classpath folder");
-        final Button setClasspathButton = new Button("Select Classpath", new FontIcon(Feather.FOLDER));
-        setClasspathButton.setPrefWidth(200);
-        setClasspathButton.setOnAction(_ -> selectedClassPath.setValue(dirChooser.showDialog(null)));
-        setClasspathButton.visibleProperty().bind(Bindings.isNull(selectedClassPath));
-        setClasspathButton.managedProperty().bind(Bindings.isNull(selectedClassPath));
+		// classpath button config
+	    Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+	    var dirChooser = new DirectoryChooser();
+	    dirChooser.setTitle("Choose the classpath folder");
+	    final Button setClasspathButton = new Button("Select Classpath", new FontIcon(Feather.FOLDER));
+	    setClasspathButton.setPrefWidth(200);
+	    setClasspathButton.setOnAction(_ -> selectedClassPath.setValue(dirChooser.showDialog(null)));
+	    setClasspathButton.visibleProperty().bind(Bindings.isNull(selectedClassPath));
+	    setClasspathButton.managedProperty().bind(Bindings.isNull(selectedClassPath));
 
-    	// componentNameField config
-        var componentNameField = new ComboBox<>(filteredOptionsList);
-        componentNameField.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
-        componentNameField.setPromptText("Type the fully qualified class name");
-        HBox.setHgrow(componentNameField, Priority.ALWAYS);
+		// componentNameField config
+	    var componentNameField = new ComboBox<>(filteredOptionsList);
+	    componentNameField.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
+	    componentNameField.setPromptText("Type the fully qualified class name");
+	    HBox.setHgrow(componentNameField, Priority.ALWAYS);
 
-        componentNameField.setOnMouseClicked(_ -> componentNameField.show());
-        componentNameField.setEditable(true);
-        componentNameField.getEditor().setOnKeyTyped(_ -> {
+	    componentNameField.setOnMouseClicked(_ -> componentNameField.show());
+	    componentNameField.setEditable(true);
+	    componentNameField.getEditor().setOnKeyTyped(_ -> {
 
-            filteredOptionsList.setPredicate(componentNameField
-            		.getEditor()
-            		.getText()
-            		.isBlank() ? null : i -> i.toLowerCase()
-            						  		  .contains(componentNameField.getEditor()
-            						  				  						 .getText()
-            						  				  						 .toLowerCase()));
+	        filteredOptionsList.setPredicate(componentNameField
+	        		.getEditor()
+	        		.getText()
+	        		.isBlank() ? null : i -> i.toLowerCase()
+	        						  		  .contains(componentNameField.getEditor()
+	        						  				  						 .getText()
+	        						  				  						 .toLowerCase()));
 
-            if (!componentNameField.isShowing()) {
-                componentNameField.show();
-            }
-        });
+	        if (!componentNameField.isShowing()) {
+	            componentNameField.show();
+	        }
+	    });
 
-    	// theme selector config
-        ComboBox<SelectableTheme> themeSelector = new ComboBox<>();
-        themeSelector.setItems(createThemeList());
-        themeSelector.getSelectionModel().select(0);
-        themeSelector.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> Application.setUserAgentStylesheet(newValue.getStyleSheet()));
+		// theme selector config
+	    ComboBox<SelectableTheme> themeSelector = new ComboBox<>();
+	    themeSelector.setItems(createThemeList());
+	    themeSelector.getSelectionModel().select(0);
+	    themeSelector.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> Application.setUserAgentStylesheet(newValue.getStyleSheet()));
+	    themeSelector.managedProperty().bind(Bindings.isNotNull(selectedClassPath));
 
-    	// watch button config
-        final Button newWatchButton = new Button("New Watch", new FontIcon(Feather.PLUS));
-        newWatchButton.setDefaultButton(true);
-        newWatchButton.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
-        newWatchButton.disableProperty().bind(Bindings.isEmpty(componentNameField.valueProperty().asString()));
-        newWatchButton.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
+		// watch button config
+	    final Button newWatchButton = new Button("New Watch", new FontIcon(Feather.PLUS));
+	    newWatchButton.setDefaultButton(true);
+	    newWatchButton.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
+	    newWatchButton.disableProperty().bind(Bindings.isEmpty(componentNameField.valueProperty().asString()));
+	    newWatchButton.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
 
-        // toolbar config
-        final var toolbar = new ToolBar(setClasspathButton, componentNameField, newWatchButton, themeSelector);
-        toolbar.setPadding(new Insets(5));
-        setTop(toolbar);
+	    // unload classpath config
+	    final Button clearClasspathButton = new Button("Unload Classpath", new FontIcon(Feather.FOLDER_MINUS));
+	    clearClasspathButton.setOnAction(_ -> selectedClassPath.setValue(null));
+	    clearClasspathButton.visibleProperty().bind(Bindings.isNotNull(selectedClassPath));
+	    clearClasspathButton.managedProperty().bind(Bindings.isNotNull(selectedClassPath));
 
-        // labels and actions config
-        selectedClassPath.addListener(
-                _ -> leftStatusLabel.setText("Classpath selected"));
+	    // toolbar config
+	    final var toolbar = new ToolBar(setClasspathButton, componentNameField, newWatchButton, themeSelector, clearClasspathButton);
+	    toolbar.setPadding(new Insets(5));
+	    setTop(toolbar);
 
-        Label startMessage = new Label("Nothing here yet. Start by selecting a classpath and then load a view.");
-        setCenter(startMessage);
+	    // labels and actions config
+	    selectedClassPath.addListener(_ -> leftStatusLabel.setText("Classpath selected"));
+	    Label startMessage = new Label("Nothing here yet. Start by selecting a classpath and then load a view.");
+	    setCenter(startMessage);
 
-        newWatchButton.setOnAction(_ -> {
-            if (tabPane == null) {
-                initTabContainer();
-            }
-            String name = componentNameField.getValue();
-            componentNameField.setValue("");
-        	ReloadingTab tab = new ReloadingTab(name, selectedClassPath.get(), leftLabelProperty());
-        	tabPane.getTabs().add(tab);
-        	tab.setOnCloseRequest(_ -> this.tabClosedConsumer.accept(tab));
-        	this.tabCreatedConsumer.accept(tab);
-        });
+	    Service<Void> newWatchButtonService = new Service<>() {
+	    	protected Task<Void> createTask() {
+	        	return new Task<>() {
+					protected Void call() throws Exception {
+						if (tabPane == null) {
+							Platform.runLater(() -> initTabContainer());
+						}
+						updateMessage("Creating view...");
+						String name = componentNameField.getValue();
+						componentNameField.setValue("");
+						ReloadingTab tab = new ReloadingTab(name, selectedClassPath.get().toPath(), leftLabelProperty());
+						Platform.runLater(() -> tabPane.getTabs().add(tab));
+						tab.setOnCloseRequest(_ -> tabClosedConsumer.accept(tab));
+						tabCreatedConsumer.accept(tab);
+						return null;
+					}
+	        	};
+	    	}
+	    };
 
-        // final bottom layout config
-        leftStatusLabel.setPrefHeight(20);
-        rightStatusLabel.setPrefHeight(20);
-        AnchorPane.setLeftAnchor(leftStatusLabel, 10d);
-        AnchorPane.setRightAnchor(rightStatusLabel, 10d);
-        AnchorPane statusBar = new AnchorPane(leftStatusLabel, rightStatusLabel);
-        setBottom(statusBar);
-    }
+	    newWatchButton.setOnAction(_ -> {
+	    	newWatchButtonService.messageProperty().addListener((_, _, nv) -> leftStatusLabel.setText(nv));
+	    	if(newWatchButtonService.getState().equals(State.READY)) {
+	    		newWatchButtonService.start();
+	    	} else {
+	    		newWatchButtonService.restart();
+	    	}
+	    });
+
+	    // final bottom layout config
+	    leftStatusLabel.setPrefHeight(20);
+	    rightStatusLabel.setPrefHeight(20);
+	    AnchorPane.setLeftAnchor(leftStatusLabel, 10d);
+	    AnchorPane.setRightAnchor(rightStatusLabel, 10d);
+	    AnchorPane statusBar = new AnchorPane(leftStatusLabel, rightStatusLabel);
+	    setBottom(statusBar);
+	}
 
     public void setOptionsList(List<String> list) {
         optionsList.setAll(list);
