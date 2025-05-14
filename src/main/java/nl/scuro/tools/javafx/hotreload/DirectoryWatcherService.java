@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,54 +37,53 @@ public class DirectoryWatcherService {
     private StringProperty updateTimestamp = new SimpleStringProperty("No update yet");
     private boolean runThread = true;
 
-    public DirectoryWatcherService(File file) {
-        watchKeys = new ArrayList<>();
-        tabMap = new HashMap<>();
-        final String basePath = file.toPath().toString();
-        try {
-            watchService = FileSystems.getDefault().newWatchService();
-            Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+    public DirectoryWatcherService(Path path) {
+	    watchKeys = new ArrayList<>();
+	    tabMap = new HashMap<>();
+	    try {
+	    	final String basePath = path.toString();
+	        watchService = FileSystems.getDefault().newWatchService();
+	        Files.walkFileTree(path, new SimpleFileVisitor<>() {
 
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                        throws IOException {
-                    String subPath = dir.toString().substring(basePath.length());
-                    String packagePath = subPath.replace("/", ".");
+	            @Override
+	            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+	                    throws IOException {
+	                String subPath = dir.toString().substring(basePath.length());
+	                String packagePath = subPath.replace("/", ".");
 
-                    LogConsumer.offerLog("Path: " + packagePath);
-                    File[] listFiles = dir.toFile().listFiles();
-                    for (File file : listFiles) {
-                        String fileName = file.getName();
-                        int index = fileName.lastIndexOf('.');
-                        String name = fileName.substring(0, index > 0 ? index : fileName.length());
-                        String fqName = packagePath + "." + name;
-                        if (fqName.startsWith(".")){
-                            fqName = fqName.substring(1);
-                        }
-                        if (file.isFile()) {
-                        	LogConsumer.offerLog(fqName);
-                            availableFiles.add(fqName);
-                        }
-                    }
-                    WatchKey key = dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                    watchKeys.add(key);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+	                LogConsumer.offerLog("Path: " + packagePath);
+	                File[] listFiles = dir.toFile().listFiles();
+	                for (File file : listFiles) {
+	                    String fileName = file.getName();
+	                    int index = fileName.lastIndexOf('.');
+	                    String name = fileName.substring(0, index > 0 ? index : fileName.length());
+	                    String fqName = packagePath + "." + name;
+	                    if (fqName.startsWith(".")){
+	                        fqName = fqName.substring(1);
+	                    }
+	                    if (file.isFile()) {
+	                    	LogConsumer.offerLog(fqName);
+	                        availableFiles.add(fqName);
+	                    }
+	                }
+	                WatchKey key = dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+	                watchKeys.add(key);
+	                return FileVisitResult.CONTINUE;
+	            }
+	        });
 
-        } catch (IOException e) {
-        	LogConsumer.offerLog('\n' + e.toString());
-        }
-        runWatcher();
-    }
+	    } catch (IOException e) {
+	    	LogConsumer.offerLog('\n' + e.toString());
+	    } catch (NullPointerException e) {}
+	    runWatcher();
+	}
 
     public List<String> getAvailableFiles() {
         return availableFiles;
     }
 
     private void runWatcher() {
-
-        Runnable r = () -> {
+    	new Thread(() -> {
             // Infinite loop to continuously watch for events
             while (runThread) {
                 try {
@@ -102,10 +100,9 @@ public class DirectoryWatcherService {
                 	LogConsumer.offerLog('\n' + ex.toString());
                     Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
                     Thread.currentThread().interrupt();
-                }
+                } catch (NullPointerException e) {}
             }
-        };
-        new Thread(r).start();
+        }).start();
     }
 
     protected void updateTabContent(String file) {
@@ -122,9 +119,12 @@ public class DirectoryWatcherService {
 
     public void deRegisterTab(Tab tab) {
     	LogConsumer.offerLog("deregister " + tab.getText());
-        Optional<String> key = tabMap.entrySet().stream().filter(entry -> entry.getValue().equals(tab))
-                .map(Map.Entry::getKey).findAny();
-        key.ifPresent(tabMap::remove);
+        tabMap.entrySet()
+        	  .stream()
+        	  .filter(entry -> entry.getValue().equals(tab))
+              .map(Map.Entry::getKey)
+              .findAny()
+              .ifPresent(tabMap::remove);
     }
 
     public void registerTab(ReloadingTab tab) {
